@@ -1,5 +1,9 @@
 # livestock-data-catalogue-backend
 
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_livestock-data-catalogue-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=DEFRA_livestock-data-catalogue-backend)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_livestock-data-catalogue-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_livestock-data-catalogue-backend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_livestock-data-catalogue-backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_livestock-data-catalogue-backend)
+
 Core delivery platform Node.js Backend Template.
 
 - [Requirements](#requirements)
@@ -215,7 +219,9 @@ the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github
 
 ### SonarCloud
 
-Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties)
+SonarCloud analyses pull requests from this repository and every push to
+`main`. See the
+[project dashboard](https://sonarcloud.io/summary/new_code?id=DEFRA_livestock-data-catalogue-backend).
 
 ## Licence
 
