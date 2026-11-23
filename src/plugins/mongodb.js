@@ -15,6 +15,10 @@ export const mongoDb = {
       const databaseName = options.databaseName
       const db = client.db(databaseName)
       const locker = new LockManager(db.collection('mongo-locks'))
+      // LockManager starts building its indexes in its constructor. Wait for
+      // them, so they exist before requests and a quick stop can't cut them
+      // off (mongo-locks 3.2.0 marks `ready` private but has no other way)
+      await locker.ready
 
       await createIndexes(db)
 
