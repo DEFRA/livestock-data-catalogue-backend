@@ -2,8 +2,14 @@ import convict from 'convict'
 import convictFormatWithValidator from 'convict-format-with-validator'
 
 import { convictValidateMongoUri } from '#/common/helpers/convict/validate-mongo-uri.js'
+import {
+  convictValidateOptionalGuid,
+  convictValidateScopeName
+} from '#/common/helpers/convict/entra-formats.js'
 
 convict.addFormat(convictValidateMongoUri)
+convict.addFormat(convictValidateOptionalGuid)
+convict.addFormat(convictValidateScopeName)
 convict.addFormats(convictFormatWithValidator)
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -126,7 +132,53 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  entra: {
+    authorityUrl: {
+      doc: 'Microsoft Entra ID sign-in authority (public cloud). The token issuer and signing keys URL are built from it and the tenant ID',
+      format: 'url',
+      default: 'https://login.microsoftonline.com'
+    },
+    tenantId: {
+      doc: 'Microsoft Entra ID tenant (directory) ID that issues access tokens. Required in production',
+      format: 'optional-guid',
+      default: '',
+      env: 'ENTRA_TENANT_ID'
+    },
+    clientId: {
+      doc: 'Application (client) ID of the App Registration that exposes this API. Required in production',
+      format: 'optional-guid',
+      default: '',
+      env: 'ENTRA_CLIENT_ID'
+    },
+    apiScope: {
+      doc: 'Delegated scope the access token must grant (the `scp` claim)',
+      format: 'scope-name',
+      default: 'access_as_user',
+      env: 'ENTRA_API_SCOPE'
+    }
   }
 })
 
 config.validate({ allowed: 'strict' })
+
+if (isProduction) {
+  assertEntraIdConfigured()
+}
+
+// Without these, every protected route returns 401. That is safe, but in
+// production it means a broken service, so refuse to start instead.
+function assertEntraIdConfigured() {
+  const missingVariables = [
+    ['ENTRA_TENANT_ID', config.get('entra.tenantId')],
+    ['ENTRA_CLIENT_ID', config.get('entra.clientId')]
+  ]
+    .filter(([, value]) => value === '')
+    .map(([name]) => name)
+
+  if (missingVariables.length > 0) {
+    throw new Error(
+      `Microsoft Entra ID is not configured: set ${missingVariables.join(' and ')}. They are required when NODE_ENV is production`
+    )
+  }
+}

@@ -3,6 +3,7 @@ import Hapi from '@hapi/hapi'
 import { secureContext } from '@defra/hapi-secure-context'
 
 import { config } from '#/config.js'
+import { entraAuth } from '#/plugins/auth.js'
 import { router } from '#/plugins/router.js'
 import { requestLogger } from '#/plugins/request-logger.js'
 import { mongoDb } from '#/plugins/mongodb.js'
@@ -44,6 +45,7 @@ export async function createServer() {
   // secureContext  - loads CA certificates from environment config
   // pulse          - provides shutdown handlers
   // mongoDb        - sets up mongo connection pool and attaches to `server` and `request` objects
+  // entraAuth      - validates Microsoft Entra ID access tokens; the default for every route
   // router         - routes used in the app
   await server.register([
     requestLogger,
@@ -54,6 +56,10 @@ export async function createServer() {
     {
       plugin: mongoDb,
       options: config.get('mongo')
+    },
+    {
+      plugin: entraAuth,
+      options: config.get('entra')
     },
     router
   ])
