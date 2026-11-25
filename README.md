@@ -113,6 +113,8 @@ To update dependencies use [npm-check-updates](https://github.com/raineorshine/n
 ncu --interactive --format group
 ```
 
+`package.json` has an `overrides` entry that makes `hapi-pulse` use the same `joi` version as this service, because no `hapi-pulse` release accepts the newer `joi`. When you update `joi` or `hapi-pulse`, check that `hapi-pulse` still starts (the server tests do this). Remove the override when a `hapi-pulse` release accepts this service's `joi` version.
+
 ### Formatting
 
 #### Windows prettier issue
